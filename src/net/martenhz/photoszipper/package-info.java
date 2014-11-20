@@ -5,4 +5,4 @@
  * @author marten
  *
  */
-package nl.mdata.photoszipper;
+package net.martenhz.photoszipper;
