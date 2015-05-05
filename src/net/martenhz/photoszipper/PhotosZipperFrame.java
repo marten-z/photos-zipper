@@ -8,12 +8,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.TimeZone;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -32,10 +29,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifReader;
 
 
 public class PhotosZipperFrame extends JFrame implements ActionListener, WindowListener {
@@ -255,13 +250,13 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			if(file.isDirectory()) {
 				renamePicturesAndVideos(file.getAbsolutePath());
 			} else if (file.isFile()) {
-				renameFile(file);
+				renameFileByDate(file);
 			}
 		}
 		
 	}
 
-	private void renameFile(final File file) throws Exception {
+	private void renameFileByDate(final File file) throws Exception {
 		if (file.exists()) {
 			try {
 				System.out.println( "Trying to rename file: " + file.getAbsolutePath());
@@ -283,32 +278,64 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	                
 	                final Calendar calendar = df.getCalendar();	                	                
 	                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
-	                System.out.println("TimeZone offset: " + calendar.get(Calendar.ZONE_OFFSET));
 	                
-	                System.out.println( "File: " + file.getAbsolutePath());
-	
-	                System.out.println( "Year: " + calendar.get(Calendar.YEAR) + ", Month: " + calendar.get(Calendar.MONTH) + 1 );
-	
-	                System.out.println( "Date: " + date + " - " + calendar.getTime() );
-	
-	                System.out.println( "Tags" );
-	                for(final Iterator i = directory.getTags().iterator(); i.hasNext(); )
-	                {
-	                    Tag tag = ( Tag )i.next();
-	                    System.out.println( "\t" + tag.getTagName() + " = " + tag.getDescription() );
-	                }
+	                // Do the actual renaming
+	                final String filePath = file.getAbsolutePath().replace(file.getName(), "");
+	                final StringBuilder newFileName = new StringBuilder(filePath);
+	                newFileName.append(calendar.get(Calendar.YEAR));
+	                newFileName.append("-");
 	                
-	                System.out.println();
-	                System.out.println();
+	                final int month = (calendar.get(Calendar.MONTH) + 1);
+	                final int day = calendar.get(Calendar.DAY_OF_MONTH);
+	                final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+	                final int minute = calendar.get(Calendar.MINUTE);
+	                final int second = calendar.get(Calendar.SECOND);
+	                
+	                newFileName.append(month < 10 ? "0" + month : month);
+	                newFileName.append("-");
+	                newFileName.append(day < 10 ? "0" + day : day);
+	                newFileName.append("_");
+	                newFileName.append(hour < 10 ? "0" + hour : hour);
+	                newFileName.append(":");
+	                newFileName.append(minute < 10 ? "0" + minute : minute);
+	                newFileName.append(":");
+	                newFileName.append(second < 10 ? "0" + second : second);
+	                
+	                renameFile(file, newFileName);	               
 	            }
 			} catch (ImageProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.getMessage();
+//				throw e;
 			}
 	        
 	    } else {
 	        throw new Exception("Unable to read file: " + file.getAbsolutePath());
 	    }
+	}
+	
+	private static void renameFile(final File file, final StringBuilder newFileName) {
+		renameFile(file, newFileName, 0);
+	}
+	
+	private static void renameFile(final File file, final StringBuilder newFileName, int iteration) {
+		System.out.println("New file name: " + newFileName.toString());
+		final boolean isRenamed = file.renameTo(new File(newFileName.toString()));
+		
+		// File possibly already exists (for example when using burst mode on a camera, it can shoot multiple pictures per second)
+        if(!isRenamed) {
+        	iteration++;
+        	
+        	if(iteration == 1) {
+        		newFileName.append("_01");
+        	} else {
+	         	if(iteration < 10) {
+	         		newFileName.delete(newFileName.length() - 1, newFileName.length());
+	         	} else {
+	         		newFileName.delete(newFileName.length() - String.valueOf(iteration).length(), newFileName.length());
+	         	}
+	         	newFileName.append(iteration);
+        	}
+        }
 	}
 
 
