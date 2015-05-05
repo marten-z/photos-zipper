@@ -14,9 +14,17 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
 
-public class Utils {
+public class PhotosZipperUtils {
+	
+	private int offsetYear = 0;
 
-	public static void renameFile(final File file, final StringBuilder newFileName, int iteration) {
+	
+	public PhotosZipperUtils(final int offsetYear) {
+		this.offsetYear = offsetYear;
+	}
+	
+
+	private static void renameFile(final File file, final StringBuilder newFileName, int iteration) {
 		System.out.println("New file name: " + newFileName.toString());
 		final boolean isRenamed = file.renameTo(new File(newFileName.toString()));
 		
@@ -48,7 +56,7 @@ public class Utils {
 		renameFile(file, newFileName, 0);
 	}
 
-	public static void renameFileByDate(final File file) throws Exception {
+	public void renameFileByDate(final File file) throws Exception {
 			if (file.exists()) {
 				try {
 					System.out.println( "Trying to rename file: " + file.getAbsolutePath());
@@ -69,7 +77,7 @@ public class Utils {
 		                
 		                // Do the actual renaming
 		                final StringBuilder newFileName = new StringBuilder(FilenameUtils.getFullPath(file.getAbsolutePath()));
-		                newFileName.append(calendar.get(Calendar.YEAR));
+		                newFileName.append(calendar.get(Calendar.YEAR) + this.offsetYear);
 		                newFileName.append("-");
 		                
 		                final int month = (calendar.get(Calendar.MONTH) + 1);
@@ -102,7 +110,7 @@ public class Utils {
 		    }
 		}
 
-	public static void renamePictures(final String path) throws Exception {
+	public void renamePictures(final String path) throws Exception {
 		final File folder = new File(path);
 		
 		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {

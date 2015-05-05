@@ -9,11 +9,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,8 +30,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	
 	private Configuration configuration;
 	private JFileChooser fileChooser;
-	private JTextField textFieldA, textFieldB;
-	private JList<String> fileListA = new JList<>(), fileListB = new JList<>();
+	private JTextField pathTextFieldA, pathTextFieldB, offsetYearTextFieldA, offsetYearTextFieldB;
 	
 
 	public PhotosZipperFrame(final String title) {
@@ -66,18 +63,18 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	private JPanel photosPanel1() {
 		final JPanel photosPanel = new JPanel();
 		
-		this.textFieldA = new JTextField();
-		this.textFieldA.setName("textField1");
-		this.textFieldA.setEditable(false);
-		this.textFieldA.setColumns(20);;
-		this.textFieldA.setText("Choose directory");
+		this.pathTextFieldA = new JTextField();
+		this.pathTextFieldA.setName("pathTextField1");
+		this.pathTextFieldA.setEditable(false);
+		this.pathTextFieldA.setColumns(20);;
+		this.pathTextFieldA.setText("Choose directory");
 		
 		final TitledBorder border = new TitledBorder("Camera 1");
 		photosPanel.setBorder(border);
 		
-		final JButton button = new JButton("Browse");
-		button.setName("button1");
-		button.addActionListener(new ActionListener() {
+		final JButton browseButton = new JButton("Browse");
+		browseButton.setName("browse1");
+		browseButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -85,12 +82,32 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			}
 		});
 		
-		this.fileListA.setName("fileList1");
-		this.fileListA.setAutoscrolls(false);
+		this.offsetYearTextFieldA = new JTextField();
+		this.offsetYearTextFieldA.setName("offsetYearTextField1");
+		this.offsetYearTextFieldA.setEditable(true);
+		this.offsetYearTextFieldA.setColumns(5);
+		this.offsetYearTextFieldA.setText("0");
 		
-		photosPanel.add(this.textFieldA);
-		photosPanel.add(button);
-		photosPanel.add(this.fileListA);
+		final JButton renameButton = new JButton("Rename pictures");
+		renameButton.setName("rename1");
+		renameButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final PhotosZipperUtils utils = new PhotosZipperUtils(Integer.valueOf(offsetYearTextFieldA.getText()));
+					utils.renamePictures(configuration.getDirectoryA());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		photosPanel.add(this.pathTextFieldA);
+		photosPanel.add(browseButton);
+		photosPanel.add(this.offsetYearTextFieldA);
+		photosPanel.add(renameButton);
 		
 		return photosPanel;
 	}
@@ -98,18 +115,18 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	private JPanel photosPanel2() {
 		final JPanel photosPanel = new JPanel();
 		
-		this.textFieldB = new JTextField();
-		this.textFieldB.setName("textField2");
-		this.textFieldB.setEditable(false);
-		this.textFieldB.setColumns(20);
-		this.textFieldB.setText("Choose directory");
+		this.pathTextFieldB = new JTextField();
+		this.pathTextFieldB.setName("pathTextField2");
+		this.pathTextFieldB.setEditable(false);
+		this.pathTextFieldB.setColumns(20);
+		this.pathTextFieldB.setText("Choose directory");
 		
 		final TitledBorder border = new TitledBorder("Camera 2");
 		photosPanel.setBorder(border);
 		
-		final JButton button = new JButton("Browse");
-		button.setName("button2");
-		button.addActionListener(new ActionListener() {
+		final JButton browseButton = new JButton("Browse");
+		browseButton.setName("browse2");
+		browseButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -117,12 +134,32 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			}
 		});
 		
-		this.fileListB.setName("fileList2");
-		this.fileListB.setAutoscrolls(true);
+		this.offsetYearTextFieldB = new JTextField();
+		this.offsetYearTextFieldB.setName("offsetYearTextField2");
+		this.offsetYearTextFieldB.setEditable(true);
+		this.offsetYearTextFieldB.setColumns(5);
+		this.offsetYearTextFieldB.setText("0");
 		
-		photosPanel.add(this.textFieldB);
-		photosPanel.add(button);
-		photosPanel.add(this.fileListB);
+		final JButton renameButton = new JButton("Rename pictures");
+		renameButton.setName("rename2");
+		renameButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final PhotosZipperUtils utils = new PhotosZipperUtils(Integer.valueOf(offsetYearTextFieldB.getText()));
+					utils.renamePictures(configuration.getDirectoryB());
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		photosPanel.add(this.pathTextFieldB);
+		photosPanel.add(browseButton);
+		photosPanel.add(this.offsetYearTextFieldB);
+		photosPanel.add(renameButton);
 		
 		return photosPanel;
 	}
@@ -175,60 +212,16 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		final String path = directory.getAbsolutePath();
 		
 		if(panelNumber == 1) {
-			textFieldA.setText(path);
+			pathTextFieldA.setText(path);
 			configuration.setDirectoryA(path);
-			fillAndShowListA();
 		}
 		else if(panelNumber == 2) {
-			textFieldB.setText(path);
+			pathTextFieldB.setText(path);
 			configuration.setDirectoryB(path);
-			fillAndShowListB();
 		}
-	}
-
-
-	private void fillAndShowListA() {
-		try {
-			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryA());
-			this.fileListA.setModel(model);
-			this.fileListA.printAll(getGraphics());
-			Utils.renamePictures(this.configuration.getDirectoryA());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
 	}
 	
-	private void fillAndShowListB() {
-		try {
-			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryB());
-			this.fileListB.setModel(model);
-			this.fileListB.printAll(getGraphics());
-			Utils.renamePictures(this.configuration.getDirectoryB());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}
 
-
-	private DefaultListModel readDirectoriesAndFiles(final String path) throws Exception {
-		final File folder = new File(path);
-		
-		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {
-			throw new Exception("Folder not readable");
-		}
-		
-		final DefaultListModel model = new DefaultListModel();
-		for(final File f : folder.listFiles()) {
-			// Ignore hidden files
-			if(!f.isHidden()) {
-				model.addElement(f);
-			} 
-		}
-		return model;
-	}
-	
 	@Override
 	public void windowActivated(final WindowEvent arg0) {
 		// TODO Auto-generated method stub
