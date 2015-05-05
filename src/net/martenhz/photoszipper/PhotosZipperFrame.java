@@ -159,7 +159,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		final JPanel informationPanel = new JPanel();
 		informationPanel.setLayout(new FlowLayout());
 		
-		final TitledBorder border = new TitledBorder("Photo information");
+		final TitledBorder border = new TitledBorder("Merging options");
 		informationPanel.setBorder(border);
 		
 		return informationPanel;
@@ -192,7 +192,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryA());
 			this.fileListA.setModel(model);
 			this.fileListA.printAll(getGraphics());
-			Utils.renamePicturesAndVideos(this.configuration.getDirectoryA());
+			Utils.renamePictures(this.configuration.getDirectoryA());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -204,7 +204,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryB());
 			this.fileListB.setModel(model);
 			this.fileListB.printAll(getGraphics());
-			Utils.renamePicturesAndVideos(this.configuration.getDirectoryB());
+			Utils.renamePictures(this.configuration.getDirectoryB());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -102,7 +102,7 @@ public class Utils {
 		    }
 		}
 
-	public static void renamePicturesAndVideos(final String path) throws Exception {
+	public static void renamePictures(final String path) throws Exception {
 		final File folder = new File(path);
 		
 		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {
@@ -111,7 +111,7 @@ public class Utils {
 		
 		for(final File file : folder.listFiles()) {
 			if(file.isDirectory()) {
-				renamePicturesAndVideos(file.getAbsolutePath());
+				renamePictures(file.getAbsolutePath());
 			} else if (file.isFile()) {
 				renameFileByDate(file);
 			}
