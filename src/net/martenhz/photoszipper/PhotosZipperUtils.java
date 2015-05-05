@@ -75,9 +75,11 @@ public class PhotosZipperUtils {
 		                final Calendar calendar = df.getCalendar();	                	                
 		                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
 		                
+		                calendar.add(Calendar.YEAR, this.offsetYear);
+		                
 		                // Do the actual renaming
 		                final StringBuilder newFileName = new StringBuilder(FilenameUtils.getFullPath(file.getAbsolutePath()));
-		                newFileName.append(calendar.get(Calendar.YEAR) + this.offsetYear);
+		                newFileName.append(calendar.get(Calendar.YEAR));
 		                newFileName.append("-");
 		                
 		                final int month = (calendar.get(Calendar.MONTH) + 1);
