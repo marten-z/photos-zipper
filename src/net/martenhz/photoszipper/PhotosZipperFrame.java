@@ -8,8 +8,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.TimeZone;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -23,6 +27,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
+
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifDirectoryBase;
+import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifReader;
 
 
 public class PhotosZipperFrame extends JFrame implements ActionListener, WindowListener {
@@ -190,45 +203,112 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 
 
 	private void fillAndShowListA() {
-//		final List<File> directoriesAndFiles = new LinkedList<File>();
-		
-		final File folder = new File(this.configuration.getDirectoryA());
-		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {
-			// Show error
-		}
-		
-		final DefaultListModel model = new DefaultListModel();
-		for(final File f : folder.listFiles()) {
-			// Ignore hidden files
-			if(!f.isHidden()) {
-//				directoriesAndFiles.add(f);
-				model.addElement(f);
-			} 
+		try {
+			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryA());
+			this.fileListA.setModel(model);
+			this.fileListA.printAll(getGraphics());
+			renamePicturesAndVideos(this.configuration.getDirectoryA());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}		
-		
-		this.fileListA.setModel(model);
-		this.fileListA.printAll(getGraphics());
 	}
 	
 	private void fillAndShowListB() {
-//		final List<File> directoriesAndFiles = new LinkedList<File>();
+		try {
+			final DefaultListModel model = readDirectoriesAndFiles(this.configuration.getDirectoryB());
+			this.fileListB.setModel(model);
+			this.fileListB.printAll(getGraphics());
+			renamePicturesAndVideos(this.configuration.getDirectoryB());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+
+
+	private DefaultListModel readDirectoriesAndFiles(final String path) throws Exception {
+		final File folder = new File(path);
 		
-		final File folder = new File(this.configuration.getDirectoryB());
 		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {
-			// Show error
+			throw new Exception("Folder not readable");
 		}
 		
 		final DefaultListModel model = new DefaultListModel();
 		for(final File f : folder.listFiles()) {
 			// Ignore hidden files
 			if(!f.isHidden()) {
-//				directoriesAndFiles.add(f);
 				model.addElement(f);
 			} 
-		}		
+		}
+		return model;
+	}
+	
+	private void renamePicturesAndVideos(final String path) throws Exception {
+		final File folder = new File(path);
 		
-		this.fileListB.setModel(model);
-		this.fileListB.printAll(getGraphics());
+		if(!folder.exists() || !folder.isDirectory() || !folder.canRead()) {
+			throw new Exception("Folder not readable");
+		}
+		
+		for(final File file : folder.listFiles()) {
+			if(file.isDirectory()) {
+				renamePicturesAndVideos(file.getAbsolutePath());
+			} else if (file.isFile()) {
+				renameFile(file);
+			}
+		}
+		
+	}
+
+	private void renameFile(final File file) throws Exception {
+		if (file.exists()) {
+			try {
+				System.out.println( "Trying to rename file: " + file.getAbsolutePath());
+				
+				final Metadata meta = ImageMetadataReader.readMetadata(file);
+				
+				for(final Directory directory : meta.getDirectories()) {
+					System.out.println("Found directory: " + directory.getName());
+				}
+	        
+		        // Read Exif Data
+	            final Directory directory = meta.getFirstDirectoryOfType(ExifIFD0Directory.class);
+	            
+	            if(directory != null) {
+	                // Read the date
+	            	final Date date = directory.getDate(ExifDirectoryBase.TAG_DATETIME);
+	            	final DateFormat df = DateFormat.getDateInstance();
+	                df.format(date);
+	                
+	                final Calendar calendar = df.getCalendar();	                	                
+	                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
+	                System.out.println("TimeZone offset: " + calendar.get(Calendar.ZONE_OFFSET));
+	                
+	                System.out.println( "File: " + file.getAbsolutePath());
+	
+	                System.out.println( "Year: " + calendar.get(Calendar.YEAR) + ", Month: " + calendar.get(Calendar.MONTH) + 1 );
+	
+	                System.out.println( "Date: " + date + " - " + calendar.getTime() );
+	
+	                System.out.println( "Tags" );
+	                for(final Iterator i = directory.getTags().iterator(); i.hasNext(); )
+	                {
+	                    Tag tag = ( Tag )i.next();
+	                    System.out.println( "\t" + tag.getTagName() + " = " + tag.getDescription() );
+	                }
+	                
+	                System.out.println();
+	                System.out.println();
+	            }
+			} catch (ImageProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+	    } else {
+	        throw new Exception("Unable to read file: " + file.getAbsolutePath());
+	    }
 	}
 
 
