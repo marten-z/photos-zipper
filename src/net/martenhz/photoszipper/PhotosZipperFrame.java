@@ -25,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -262,10 +264,6 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 				System.out.println( "Trying to rename file: " + file.getAbsolutePath());
 				
 				final Metadata meta = ImageMetadataReader.readMetadata(file);
-				
-				for(final Directory directory : meta.getDirectories()) {
-					System.out.println("Found directory: " + directory.getName());
-				}
 	        
 		        // Read Exif Data
 	            final Directory directory = meta.getFirstDirectoryOfType(ExifIFD0Directory.class);
@@ -280,8 +278,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
 	                
 	                // Do the actual renaming
-	                final String filePath = file.getAbsolutePath().replace(file.getName(), "");
-	                final StringBuilder newFileName = new StringBuilder(filePath);
+	                final StringBuilder newFileName = new StringBuilder(FilenameUtils.getFullPath(file.getAbsolutePath()));
 	                newFileName.append(calendar.get(Calendar.YEAR));
 	                newFileName.append("-");
 	                
@@ -300,6 +297,8 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	                newFileName.append(minute < 10 ? "0" + minute : minute);
 	                newFileName.append(":");
 	                newFileName.append(second < 10 ? "0" + second : second);
+	                newFileName.append(".");
+	                newFileName.append(FilenameUtils.getExtension(file.getAbsolutePath()));
 	                
 	                renameFile(file, newFileName);	               
 	            }
@@ -325,15 +324,22 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
         if(!isRenamed) {
         	iteration++;
         	
+        	final String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+        	
         	if(iteration == 1) {
+        		newFileName.delete(newFileName.length() - (extension.length() + 1), newFileName.length());
         		newFileName.append("_01");
+        		newFileName.append(".");
+        		newFileName.append(extension);
         	} else {
 	         	if(iteration < 10) {
-	         		newFileName.delete(newFileName.length() - 1, newFileName.length());
+	         		newFileName.delete(newFileName.length() - 1 - (extension.length() + 1), newFileName.length());
 	         	} else {
-	         		newFileName.delete(newFileName.length() - String.valueOf(iteration).length(), newFileName.length());
+	         		newFileName.delete(newFileName.length() - String.valueOf(iteration).length() - (extension.length() + 1), newFileName.length());
 	         	}
 	         	newFileName.append(iteration);
+	         	newFileName.append(".");
+	         	newFileName.append(extension);
         	}
         }
 	}
