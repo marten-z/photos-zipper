@@ -30,7 +30,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 	
 	private Configuration configuration;
 	private JFileChooser fileChooser;
-	private JTextField pathTextFieldA, pathTextFieldB, offsetYearTextFieldA, offsetYearTextFieldB;
+	private JTextField pathTextFieldA, pathTextFieldB, offsetYearTextFieldA, offsetYearTextFieldB, offsetHourTextFieldA, offsetHourTextFieldB;
 	
 
 	public PhotosZipperFrame(final String title) {
@@ -86,7 +86,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		this.offsetYearTextFieldA.setName("offsetYearTextField1");
 		this.offsetYearTextFieldA.setEditable(true);
 		this.offsetYearTextFieldA.setColumns(5);
-		this.offsetYearTextFieldA.setText("0");
+		this.offsetYearTextFieldA.setText("Year offset");
 		
 		final JButton renameButton = new JButton("Rename pictures");
 		renameButton.setName("rename1");
@@ -95,7 +95,9 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					final PhotosZipperUtils utils = new PhotosZipperUtils(Integer.valueOf(offsetYearTextFieldA.getText()));
+					final PhotosZipperUtils utils = new PhotosZipperUtils(
+							getIntegerValue(offsetYearTextFieldA.getText()), getIntegerValue(offsetHourTextFieldA.getText())
+							);
 					utils.renamePictures(configuration.getDirectoryA());
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -104,9 +106,16 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			}
 		});
 		
+		this.offsetHourTextFieldA = new JTextField();
+		this.offsetHourTextFieldA.setName("offsetHourTextField1");
+		this.offsetHourTextFieldA.setEditable(true);
+		this.offsetHourTextFieldA.setColumns(5);
+		this.offsetHourTextFieldA.setText("Hour offset");
+		
 		photosPanel.add(this.pathTextFieldA);
 		photosPanel.add(browseButton);
 		photosPanel.add(this.offsetYearTextFieldA);
+		photosPanel.add(this.offsetHourTextFieldA);
 		photosPanel.add(renameButton);
 		
 		return photosPanel;
@@ -138,7 +147,7 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		this.offsetYearTextFieldB.setName("offsetYearTextField2");
 		this.offsetYearTextFieldB.setEditable(true);
 		this.offsetYearTextFieldB.setColumns(5);
-		this.offsetYearTextFieldB.setText("0");
+		this.offsetYearTextFieldB.setText("Year offset");
 		
 		final JButton renameButton = new JButton("Rename pictures");
 		renameButton.setName("rename2");
@@ -147,7 +156,9 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					final PhotosZipperUtils utils = new PhotosZipperUtils(Integer.valueOf(offsetYearTextFieldB.getText()));
+					final PhotosZipperUtils utils = new PhotosZipperUtils(
+							getIntegerValue(offsetYearTextFieldB.getText()), getIntegerValue(offsetHourTextFieldB.getText())
+							);
 					utils.renamePictures(configuration.getDirectoryB());
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -156,9 +167,16 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			}
 		});
 		
+		this.offsetHourTextFieldB = new JTextField();
+		this.offsetHourTextFieldB.setName("offsetYearTextField2");
+		this.offsetHourTextFieldB.setEditable(true);
+		this.offsetHourTextFieldB.setColumns(5);
+		this.offsetHourTextFieldB.setText("Hour offset");
+		
 		photosPanel.add(this.pathTextFieldB);
 		photosPanel.add(browseButton);
 		photosPanel.add(this.offsetYearTextFieldB);
+		photosPanel.add(this.offsetHourTextFieldB);
 		photosPanel.add(renameButton);
 		
 		return photosPanel;
@@ -219,6 +237,10 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 			pathTextFieldB.setText(path);
 			configuration.setDirectoryB(path);
 		}
+	}
+	
+	private int getIntegerValue(final String textFieldValue) {
+		return Integer.valueOf(textFieldValue.replaceAll("[^\\d.-]", ""));		
 	}
 	
 

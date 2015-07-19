@@ -17,10 +17,12 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 public class PhotosZipperUtils {
 	
 	private int offsetYear = 0;
+	private int offsetHour = 0;
 
 	
-	public PhotosZipperUtils(final int offsetYear) {
+	public PhotosZipperUtils(final int offsetYear, final int offsetHour) {
 		this.offsetYear = offsetYear;
+		this.offsetHour = offsetHour;
 	}
 	
 
@@ -76,6 +78,7 @@ public class PhotosZipperUtils {
 		                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
 		                
 		                calendar.add(Calendar.YEAR, this.offsetYear);
+		                calendar.add(Calendar.HOUR_OF_DAY, this.offsetHour);
 		                
 		                // Do the actual renaming
 		                final StringBuilder newFileName = new StringBuilder(FilenameUtils.getFullPath(file.getAbsolutePath()));
