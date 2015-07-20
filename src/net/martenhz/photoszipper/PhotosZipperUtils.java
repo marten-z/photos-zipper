@@ -27,8 +27,13 @@ public class PhotosZipperUtils {
 	
 
 	private static void renameFile(final File file, final StringBuilder newFileName, int iteration) {
-		System.out.println("New file name: " + newFileName.toString());
-		final boolean isRenamed = file.renameTo(new File(newFileName.toString()));
+		System.out.println("Renaming [" + file.getAbsolutePath() + "] to [" + newFileName.toString() + "]");
+		boolean isRenamed = false;
+		
+		final File newFile = new File(newFileName.toString());
+		if(!newFile.exists()) {
+			isRenamed = file.renameTo(newFile);
+		}
 		
 		// File possibly already exists (for example when using burst mode on a camera, it can shoot multiple pictures per second)
 	    if(!isRenamed) {
@@ -50,6 +55,13 @@ public class PhotosZipperUtils {
 	         	newFileName.append(iteration);
 	         	newFileName.append(".");
 	         	newFileName.append(extension);
+	    	}
+	    	
+	    	System.out.println("Renaming [" + file.getAbsolutePath() + "] to [" + newFileName.toString() + "]");
+	    	isRenamed = file.renameTo(new File(newFileName.toString()));
+	    	
+	    	if(!isRenamed) {
+	    		System.out.println("Renaming file [" + file.getAbsolutePath() + "] to [" + newFileName.toString() + "] FAILED");
 	    	}
 	    }
 	}
