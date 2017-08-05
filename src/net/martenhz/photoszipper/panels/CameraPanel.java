@@ -6,6 +6,7 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
@@ -19,7 +20,7 @@ public class CameraPanel extends JPanel {
 	private String name;
 	private String directory;
 	private JFileChooser fileChooser;
-	private JTextField pathTextField, offsetYearTextField, offsetHourTextField;
+	private JTextField pathTextField, offsetYearsTextField, offsetHoursTextField, offsetMinutesTextField;
 	
 	
 	public CameraPanel(final String name) {
@@ -42,7 +43,7 @@ public class CameraPanel extends JPanel {
 		this.setBorder(border);
 		
 		final JButton browseButton = new JButton("Browse");
-		browseButton.setName("browse1");
+		browseButton.setName("browse");
 		browseButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -51,11 +52,13 @@ public class CameraPanel extends JPanel {
 			}
 		});
 		
-		this.offsetYearTextField = new JTextField();
-		this.offsetYearTextField.setName("offsetYearTextField");
-		this.offsetYearTextField.setEditable(true);
-		this.offsetYearTextField.setColumns(5);
-		this.offsetYearTextField.setText("Year offset");
+		JLabel offsetYearsLabel = new JLabel("Years offset");
+		this.offsetYearsTextField = new JTextField();
+		this.offsetYearsTextField.setName("offsetYearsTextField");
+		this.offsetYearsTextField.setEditable(true);
+		this.offsetYearsTextField.setColumns(2);
+		this.offsetYearsTextField.setText("0");
+		offsetYearsLabel.setLabelFor(this.offsetYearsTextField);
 		
 		final JButton renameButton = new JButton("Rename pictures");
 		renameButton.setName("rename");
@@ -65,7 +68,9 @@ public class CameraPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					final PhotosZipperUtils utils = new PhotosZipperUtils(
-							getIntegerValue(offsetYearTextField.getText()), getIntegerValue(offsetHourTextField.getText())
+							getIntegerValue(offsetYearsTextField.getText()), 
+							getIntegerValue(offsetHoursTextField.getText()),
+							getIntegerValue(offsetMinutesTextField.getText())
 							);
 					utils.renamePictures(directory);
 				} catch (Exception e1) {
@@ -75,16 +80,30 @@ public class CameraPanel extends JPanel {
 			}
 		});
 		
-		this.offsetHourTextField = new JTextField();
-		this.offsetHourTextField.setName("offsetHourTextField");
-		this.offsetHourTextField.setEditable(true);
-		this.offsetHourTextField.setColumns(5);
-		this.offsetHourTextField.setText("Hour offset");
+		JLabel offsetHoursLabel = new JLabel("Hours offset");
+		this.offsetHoursTextField = new JTextField();
+		this.offsetHoursTextField.setName("offsetHoursTextField");
+		this.offsetHoursTextField.setEditable(true);
+		this.offsetHoursTextField.setColumns(2);
+		this.offsetHoursTextField.setText("0");
+		offsetHoursLabel.setLabelFor(this.offsetHoursTextField);
+		
+		JLabel offsetMinutesLabel = new JLabel("Minutes offset");
+		this.offsetMinutesTextField = new JTextField();
+		this.offsetMinutesTextField.setName("offsetMinutesTextField");
+		this.offsetMinutesTextField.setEditable(true);
+		this.offsetMinutesTextField.setColumns(2);
+		this.offsetMinutesTextField.setText("0");
+		offsetMinutesLabel.setLabelFor(this.offsetMinutesTextField);
 		
 		this.add(pathTextField);
 		this.add(browseButton);
-		this.add(offsetYearTextField);
-		this.add(offsetHourTextField);
+		this.add(offsetYearsLabel);
+		this.add(offsetYearsTextField);
+		this.add(offsetHoursLabel);
+		this.add(offsetHoursTextField);
+		this.add(offsetMinutesLabel);
+		this.add(offsetMinutesTextField);
 		this.add(renameButton);
 	}
 	

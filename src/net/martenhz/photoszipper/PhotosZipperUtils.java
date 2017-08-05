@@ -16,13 +16,13 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 
 public class PhotosZipperUtils {
 	
-	private int offsetYear = 0;
-	private int offsetHour = 0;
+	private int offsetYears, offsetHours, offsetMinutes = 0;
 
 	
-	public PhotosZipperUtils(final int offsetYear, final int offsetHour) {
-		this.offsetYear = offsetYear;
-		this.offsetHour = offsetHour;
+	public PhotosZipperUtils(final int offsetYears, final int offsetHours, final int offsetMinutes) {
+		this.offsetYears = offsetYears;
+		this.offsetHours = offsetHours;
+		this.offsetMinutes = offsetMinutes;
 	}
 	
 
@@ -89,8 +89,9 @@ public class PhotosZipperUtils {
 		                final Calendar calendar = df.getCalendar();	                	                
 		                calendar.setTimeInMillis(calendar.getTimeInMillis() - (calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET)));
 		                
-		                calendar.add(Calendar.YEAR, this.offsetYear);
-		                calendar.add(Calendar.HOUR_OF_DAY, this.offsetHour);
+		                calendar.add(Calendar.YEAR, this.offsetYears);
+		                calendar.add(Calendar.HOUR_OF_DAY, this.offsetHours);
+		                calendar.add(Calendar.MINUTE, this.offsetMinutes);
 		                
 		                // Do the actual renaming
 		                final StringBuilder newFileName = new StringBuilder(FilenameUtils.getFullPath(file.getAbsolutePath()));
