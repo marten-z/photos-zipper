@@ -108,9 +108,9 @@ public class PhotosZipperUtils {
 		                newFileName.append(day < 10 ? "0" + day : day);
 		                newFileName.append("_");
 		                newFileName.append(hour < 10 ? "0" + hour : hour);
-		                newFileName.append(":");
+		                newFileName.append("-");
 		                newFileName.append(minute < 10 ? "0" + minute : minute);
-		                newFileName.append(":");
+		                newFileName.append("-");
 		                newFileName.append(second < 10 ? "0" + second : second);
 		                newFileName.append(".");
 		                newFileName.append(FilenameUtils.getExtension(file.getAbsolutePath()));
