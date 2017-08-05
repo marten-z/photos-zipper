@@ -73,8 +73,6 @@ public class PhotosZipperUtils {
 	public void renameFileByDate(final File file) throws Exception {
 			if (file.exists()) {
 				try {
-					System.out.println( "Trying to rename file: " + file.getAbsolutePath());
-					
 					final Metadata meta = ImageMetadataReader.readMetadata(file);
 		        
 			        // Read Exif Data
