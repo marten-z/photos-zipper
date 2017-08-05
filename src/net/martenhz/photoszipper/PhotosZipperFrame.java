@@ -7,48 +7,34 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.TitledBorder;
+
+import net.martenhz.photoszipper.panels.CameraPanel;
 
 
 public class PhotosZipperFrame extends JFrame implements ActionListener, WindowListener {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private Configuration configuration;
-	private JFileChooser fileChooser;
-	private JTextField pathTextFieldA, pathTextFieldB, offsetYearTextFieldA, offsetYearTextFieldB, offsetHourTextFieldA, offsetHourTextFieldB;
+	private static final long serialVersionUID = -3770165089547308360L;
 	
 
 	public PhotosZipperFrame(final String title) {
 		// How-to from: http://www.ntu.edu.sg/home/ehchua/programming/java/j4a_gui.html
-		
-		this.configuration = new Configuration();
-		
-		fileChooser = new JFileChooser(new File("."));
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
 		// Content-pane sets layout
 		setLayout(new GridLayout(1,3));
 		setJMenuBar(constructJMenuBar());
  
 		// Content-pane adds components
-		add(photosPanel1());
+		add(new CameraPanel("Camera 1"));
 		add(informationPanel());
-		add(photosPanel2());
+		add(new CameraPanel("Camera 2"));
  
 		// Source object adds listener
 		// .....
@@ -57,129 +43,6 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		setTitle(title);  // "this" JFrame sets title
 		setSize(800, 600);   // "this" JFrame sets initial size (or pack())
 		setVisible(true);    // show it
-	}
-	
-	
-	private JPanel photosPanel1() {
-		final JPanel photosPanel = new JPanel();
-		
-		this.pathTextFieldA = new JTextField();
-		this.pathTextFieldA.setName("pathTextField1");
-		this.pathTextFieldA.setEditable(false);
-		this.pathTextFieldA.setColumns(20);;
-		this.pathTextFieldA.setText("Choose directory");
-		
-		final TitledBorder border = new TitledBorder("Camera 1");
-		photosPanel.setBorder(border);
-		
-		final JButton browseButton = new JButton("Browse");
-		browseButton.setName("browse1");
-		browseButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openDirectoryChooser(1);
-			}
-		});
-		
-		this.offsetYearTextFieldA = new JTextField();
-		this.offsetYearTextFieldA.setName("offsetYearTextField1");
-		this.offsetYearTextFieldA.setEditable(true);
-		this.offsetYearTextFieldA.setColumns(5);
-		this.offsetYearTextFieldA.setText("Year offset");
-		
-		final JButton renameButton = new JButton("Rename pictures");
-		renameButton.setName("rename1");
-		renameButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final PhotosZipperUtils utils = new PhotosZipperUtils(
-							getIntegerValue(offsetYearTextFieldA.getText()), getIntegerValue(offsetHourTextFieldA.getText())
-							);
-					utils.renamePictures(configuration.getDirectoryA());
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		this.offsetHourTextFieldA = new JTextField();
-		this.offsetHourTextFieldA.setName("offsetHourTextField1");
-		this.offsetHourTextFieldA.setEditable(true);
-		this.offsetHourTextFieldA.setColumns(5);
-		this.offsetHourTextFieldA.setText("Hour offset");
-		
-		photosPanel.add(this.pathTextFieldA);
-		photosPanel.add(browseButton);
-		photosPanel.add(this.offsetYearTextFieldA);
-		photosPanel.add(this.offsetHourTextFieldA);
-		photosPanel.add(renameButton);
-		
-		return photosPanel;
-	}
-	
-	private JPanel photosPanel2() {
-		final JPanel photosPanel = new JPanel();
-		
-		this.pathTextFieldB = new JTextField();
-		this.pathTextFieldB.setName("pathTextField2");
-		this.pathTextFieldB.setEditable(false);
-		this.pathTextFieldB.setColumns(20);
-		this.pathTextFieldB.setText("Choose directory");
-		
-		final TitledBorder border = new TitledBorder("Camera 2");
-		photosPanel.setBorder(border);
-		
-		final JButton browseButton = new JButton("Browse");
-		browseButton.setName("browse2");
-		browseButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openDirectoryChooser(2);
-			}
-		});
-		
-		this.offsetYearTextFieldB = new JTextField();
-		this.offsetYearTextFieldB.setName("offsetYearTextField2");
-		this.offsetYearTextFieldB.setEditable(true);
-		this.offsetYearTextFieldB.setColumns(5);
-		this.offsetYearTextFieldB.setText("Year offset");
-		
-		final JButton renameButton = new JButton("Rename pictures");
-		renameButton.setName("rename2");
-		renameButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final PhotosZipperUtils utils = new PhotosZipperUtils(
-							getIntegerValue(offsetYearTextFieldB.getText()), getIntegerValue(offsetHourTextFieldB.getText())
-							);
-					utils.renamePictures(configuration.getDirectoryB());
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		
-		this.offsetHourTextFieldB = new JTextField();
-		this.offsetHourTextFieldB.setName("offsetYearTextField2");
-		this.offsetHourTextFieldB.setEditable(true);
-		this.offsetHourTextFieldB.setColumns(5);
-		this.offsetHourTextFieldB.setText("Hour offset");
-		
-		photosPanel.add(this.pathTextFieldB);
-		photosPanel.add(browseButton);
-		photosPanel.add(this.offsetYearTextFieldB);
-		photosPanel.add(this.offsetHourTextFieldB);
-		photosPanel.add(renameButton);
-		
-		return photosPanel;
 	}
 
 
@@ -218,29 +81,6 @@ public class PhotosZipperFrame extends JFrame implements ActionListener, WindowL
 		informationPanel.setBorder(border);
 		
 		return informationPanel;
-	}
-	
-	private void openDirectoryChooser(final int panelNumber) {
-		if(fileChooser.showOpenDialog(this) == fileChooser.APPROVE_OPTION) {
-			openDirectory(panelNumber, fileChooser.getSelectedFile());
-		}
-	}
-	
-	private void openDirectory(final int panelNumber, final File directory) {
-		final String path = directory.getAbsolutePath();
-		
-		if(panelNumber == 1) {
-			pathTextFieldA.setText(path);
-			configuration.setDirectoryA(path);
-		}
-		else if(panelNumber == 2) {
-			pathTextFieldB.setText(path);
-			configuration.setDirectoryB(path);
-		}
-	}
-	
-	private int getIntegerValue(final String textFieldValue) {
-		return Integer.valueOf(textFieldValue.replaceAll("[^\\d.-]", ""));		
 	}
 	
 
